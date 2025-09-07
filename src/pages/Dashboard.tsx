@@ -38,7 +38,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Project, ProjectStatus, Student, ProjectWithDetails } from '../types';
 import { useAppContext } from '../context/AppContext';
-import { getStudentPhoto, getStudentInitials } from '../utils/photoUtils';
+import { getStudentInitials } from '../utils/photoUtils';
 import { exportToExcel, exportToPDF } from '../utils/exportUtils';
 
 interface TabPanelProps {

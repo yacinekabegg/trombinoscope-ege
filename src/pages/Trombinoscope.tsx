@@ -25,9 +25,6 @@ import {
   TableRow,
   Paper,
   Checkbox,
-  Input,
-  FormControl,
-  InputLabel,
 } from '@mui/material';
 import {
   ViewModule as GridViewIcon,
@@ -41,7 +38,7 @@ import {
 import { Student } from '../types';
 import { useAppContext } from '../context/AppContext';
 import { exportToExcel, exportToPDF, exportTrombinoscopeToPDF } from '../utils/exportUtils';
-import { getStudentPhoto, getStudentInitials } from '../utils/photoUtils';
+import { getStudentInitials } from '../utils/photoUtils';
 
 type ViewMode = 'gallery' | 'table';
 

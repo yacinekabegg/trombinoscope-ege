@@ -36,7 +36,7 @@ import { format, isAfter } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Project, ProjectStatus, Student } from '../types';
 import { useAppContext } from '../context/AppContext';
-import { getStudentPhoto, getStudentInitials } from '../utils/photoUtils';
+import { getStudentInitials } from '../utils/photoUtils';
 
 const Projects: React.FC = () => {
   const { projects, students, modules, updateProject, addProject, deleteProject } = useAppContext();
