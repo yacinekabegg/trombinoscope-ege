@@ -42,7 +42,7 @@ Application de suivi étudiant pour le Master EGE (Économie et Gestion d'Entrep
 
 ```bash
 # Cloner le repository
-git clone https://github.com/[votre-username]/trombinoscope-ege.git
+git clone https://github.com/yacinekabegg/trombinoscope-ege.git
 cd trombinoscope-ege
 
 # Installer les dépendances
