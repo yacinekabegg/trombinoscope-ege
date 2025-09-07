@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Application de suivi étudiant pour master EGE",
   "private": true,
+  "homepage": "https://yacinekabegg.github.io/trombinoscope-ege",
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
