@@ -6,7 +6,8 @@ import {
   deleteDoc, 
   onSnapshot,
   query,
-  orderBy 
+  orderBy,
+  Timestamp 
 } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import { Student, Project, Module } from '../types';
@@ -54,10 +55,10 @@ export const projectService = {
       return {
         id: doc.id,
         ...data,
-        deadline: data.deadline ? new Date(data.deadline.seconds * 1000) : new Date(),
-        submissionDate: data.submissionDate ? new Date(data.submissionDate.seconds * 1000) : undefined,
-        createdAt: data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date(),
-        updatedAt: data.updatedAt ? new Date(data.updatedAt.seconds * 1000) : new Date(),
+        deadline: data.deadline ? (data.deadline.toDate ? data.deadline.toDate() : new Date(data.deadline.seconds * 1000)) : new Date(),
+        submissionDate: data.submissionDate ? (data.submissionDate.toDate ? data.submissionDate.toDate() : new Date(data.submissionDate.seconds * 1000)) : undefined,
+        createdAt: data.createdAt ? (data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt.seconds * 1000)) : new Date(),
+        updatedAt: data.updatedAt ? (data.updatedAt.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt.seconds * 1000)) : new Date(),
       } as Project;
     });
   },
@@ -66,10 +67,10 @@ export const projectService = {
   async save(project: Project): Promise<void> {
     const projectData = {
       ...project,
-      deadline: project.deadline,
-      submissionDate: project.submissionDate,
-      createdAt: project.createdAt,
-      updatedAt: project.updatedAt,
+      deadline: project.deadline ? Timestamp.fromDate(project.deadline) : null,
+      submissionDate: project.submissionDate ? Timestamp.fromDate(project.submissionDate) : null,
+      createdAt: project.createdAt ? Timestamp.fromDate(project.createdAt) : Timestamp.now(),
+      updatedAt: project.updatedAt ? Timestamp.fromDate(project.updatedAt) : Timestamp.now(),
     };
     await setDoc(doc(db, PROJECTS_COLLECTION, project.id), projectData);
   },
@@ -88,10 +89,10 @@ export const projectService = {
         return {
           id: doc.id,
           ...data,
-          deadline: data.deadline ? new Date(data.deadline.seconds * 1000) : new Date(),
-          submissionDate: data.submissionDate ? new Date(data.submissionDate.seconds * 1000) : undefined,
-          createdAt: data.createdAt ? new Date(data.createdAt.seconds * 1000) : new Date(),
-          updatedAt: data.updatedAt ? new Date(data.updatedAt.seconds * 1000) : new Date(),
+          deadline: data.deadline ? (data.deadline.toDate ? data.deadline.toDate() : new Date(data.deadline.seconds * 1000)) : new Date(),
+          submissionDate: data.submissionDate ? (data.submissionDate.toDate ? data.submissionDate.toDate() : new Date(data.submissionDate.seconds * 1000)) : undefined,
+          createdAt: data.createdAt ? (data.createdAt.toDate ? data.createdAt.toDate() : new Date(data.createdAt.seconds * 1000)) : new Date(),
+          updatedAt: data.updatedAt ? (data.updatedAt.toDate ? data.updatedAt.toDate() : new Date(data.updatedAt.seconds * 1000)) : new Date(),
         } as Project;
       });
       callback(projects);
