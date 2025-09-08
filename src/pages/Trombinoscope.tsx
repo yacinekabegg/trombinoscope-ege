@@ -36,14 +36,14 @@ import {
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { Student } from '../types';
-import { useAppContext } from '../context/AppContext';
+import { useFirebaseContext } from '../context/FirebaseContext';
 import { exportToExcel, exportToPDF, exportTrombinoscopeToPDF } from '../utils/exportUtils';
 import { getStudentInitials } from '../utils/photoUtils';
 
 type ViewMode = 'gallery' | 'table';
 
 const Trombinoscope: React.FC = () => {
-  const { students, projects, modules, updateStudent, addStudent, resetData } = useAppContext();
+  const { students, projects, modules, updateStudent, addStudent, resetData } = useFirebaseContext();
   const [viewMode, setViewMode] = useState<ViewMode>('gallery');
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);

@@ -24,10 +24,10 @@ import {
   Assignment as ProjectIcon,
 } from '@mui/icons-material';
 import { Module, ProjectStatus } from '../types';
-import { useAppContext } from '../context/AppContext';
+import { useFirebaseContext } from '../context/FirebaseContext';
 
 const Modules: React.FC = () => {
-  const { modules, projects, updateModule, addModule } = useAppContext();
+  const { modules, projects, updateModule, addModule } = useFirebaseContext();
   const navigate = useNavigate();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
