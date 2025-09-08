@@ -15,6 +15,7 @@ interface FirebaseContextType {
   updateModule: (module: Module) => void;
   addModule: (module: Module) => void;
   resetData: () => void;
+  migrateStudents: () => void;
   loading: boolean;
   error: string | null;
 }
@@ -65,11 +66,38 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
             ...mockModules.map(module => moduleService.save(module))
           ]);
 
-          setStudents(mockStudents);
+          // S'assurer que les données mockées ont le bon format
+          const formattedMockStudents = mockStudents.map(student => ({
+            ...student,
+            absenceCount: typeof student.absenceCount === 'number' && !isNaN(student.absenceCount) ? student.absenceCount : 0
+          }));
+          setStudents(formattedMockStudents);
           setProjects(mockProjects);
           setModules(mockModules);
         } else {
-          setStudents(firebaseStudents);
+          // Migration : corriger les étudiants qui n'ont pas absenceCount
+          const studentsToUpdate = firebaseStudents.filter(student => 
+            typeof student.absenceCount !== 'number' || isNaN(student.absenceCount)
+          );
+          
+          if (studentsToUpdate.length > 0) {
+            console.log(`Migration: correction de ${studentsToUpdate.length} étudiants sans absenceCount`);
+            await Promise.all(
+              studentsToUpdate.map(student => 
+                studentService.save({
+                  ...student,
+                  absenceCount: 0
+                })
+              )
+            );
+          }
+
+          // S'assurer que les données Firebase ont le bon format
+          const formattedFirebaseStudents = firebaseStudents.map(student => ({
+            ...student,
+            absenceCount: typeof student.absenceCount === 'number' && !isNaN(student.absenceCount) ? student.absenceCount : 0
+          }));
+          setStudents(formattedFirebaseStudents);
           setProjects(firebaseProjects);
           setModules(firebaseModules);
         }
@@ -78,7 +106,11 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
         setError('Erreur de connexion à la base de données');
         
         // Fallback vers les données mockées en cas d'erreur
-        setStudents(mockStudents);
+        const formattedMockStudents = mockStudents.map(student => ({
+          ...student,
+          absenceCount: typeof student.absenceCount === 'number' && !isNaN(student.absenceCount) ? student.absenceCount : 0
+        }));
+        setStudents(formattedMockStudents);
         setProjects(mockProjects);
         setModules(mockModules);
       } finally {
@@ -92,7 +124,12 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
   // Écouter les changements en temps réel
   useEffect(() => {
     const unsubscribeStudents = studentService.onSnapshot((newStudents) => {
-      setStudents(newStudents);
+      // S'assurer que absenceCount est toujours un nombre
+      const formattedStudents = newStudents.map(student => ({
+        ...student,
+        absenceCount: typeof student.absenceCount === 'number' && !isNaN(student.absenceCount) ? student.absenceCount : 0
+      }));
+      setStudents(formattedStudents);
     });
 
     const unsubscribeProjects = projectService.onSnapshot((newProjects) => {
@@ -180,6 +217,33 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
     }
   };
 
+  const migrateStudents = async () => {
+    try {
+      console.log('Migration des étudiants en cours...');
+      const studentsToMigrate = students.filter(student => 
+        typeof student.absenceCount !== 'number' || isNaN(student.absenceCount)
+      );
+      
+      if (studentsToMigrate.length > 0) {
+        console.log(`Migration de ${studentsToMigrate.length} étudiants`);
+        await Promise.all(
+          studentsToMigrate.map(student => 
+            studentService.save({
+              ...student,
+              absenceCount: 0
+            })
+          )
+        );
+        console.log('Migration terminée');
+      } else {
+        console.log('Aucun étudiant à migrer');
+      }
+    } catch (err) {
+      console.error('Erreur lors de la migration:', err);
+      setError('Erreur lors de la migration');
+    }
+  };
+
   const resetData = async () => {
     try {
       setLoading(true);
@@ -221,6 +285,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
     updateModule,
     addModule,
     resetData,
+    migrateStudents,
     loading,
     error
   };

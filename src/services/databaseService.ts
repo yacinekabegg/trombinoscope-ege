@@ -22,12 +22,23 @@ export const studentService = {
   // Récupérer tous les étudiants
   async getAll(): Promise<Student[]> {
     const querySnapshot = await getDocs(collection(db, STUDENTS_COLLECTION));
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Student));
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        absenceCount: typeof data.absenceCount === 'number' && !isNaN(data.absenceCount) ? data.absenceCount : 0
+      } as Student;
+    });
   },
 
   // Sauvegarder un étudiant
   async save(student: Student): Promise<void> {
-    await setDoc(doc(db, STUDENTS_COLLECTION, student.id), student);
+    const studentData = {
+      ...student,
+      absenceCount: typeof student.absenceCount === 'number' && !isNaN(student.absenceCount) ? student.absenceCount : 0
+    };
+    await setDoc(doc(db, STUDENTS_COLLECTION, student.id), studentData);
   },
 
   // Supprimer un étudiant
@@ -39,7 +50,14 @@ export const studentService = {
   onSnapshot(callback: (students: Student[]) => void) {
     const q = query(collection(db, STUDENTS_COLLECTION), orderBy('lastName'));
     return onSnapshot(q, (querySnapshot) => {
-      const students = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Student));
+      const students = querySnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          absenceCount: typeof data.absenceCount === 'number' && !isNaN(data.absenceCount) ? data.absenceCount : 0
+        } as Student;
+      });
       callback(students);
     });
   }

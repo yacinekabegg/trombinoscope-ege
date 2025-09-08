@@ -34,6 +34,8 @@ import {
   FileDownload as ExportIcon,
   PhotoCamera as PhotoIcon,
   Delete as DeleteIcon,
+  Remove as RemoveIcon,
+  Add as AddAbsenceIcon,
 } from '@mui/icons-material';
 import { Student } from '../types';
 import { useFirebaseContext } from '../context/FirebaseContext';
@@ -43,7 +45,7 @@ import { getStudentInitials } from '../utils/photoUtils';
 type ViewMode = 'gallery' | 'table';
 
 const Trombinoscope: React.FC = () => {
-  const { students, projects, modules, updateStudent, addStudent, resetData } = useFirebaseContext();
+  const { students, projects, modules, updateStudent, addStudent, resetData, migrateStudents } = useFirebaseContext();
   const [viewMode, setViewMode] = useState<ViewMode>('gallery');
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -54,6 +56,7 @@ const Trombinoscope: React.FC = () => {
     lastName: '',
     email: '',
     studentNumber: '',
+    absenceCount: 0,
   });
 
   const handleViewModeChange = (
@@ -105,6 +108,22 @@ const Trombinoscope: React.FC = () => {
     }
   };
 
+  const handleAddAbsence = (studentId: string) => {
+    const student = students.find(s => s.id === studentId);
+    if (student) {
+      const updatedStudent = { ...student, absenceCount: student.absenceCount + 1 };
+      updateStudent(updatedStudent);
+    }
+  };
+
+  const handleRemoveAbsence = (studentId: string) => {
+    const student = students.find(s => s.id === studentId);
+    if (student && student.absenceCount > 0) {
+      const updatedStudent = { ...student, absenceCount: student.absenceCount - 1 };
+      updateStudent(updatedStudent);
+    }
+  };
+
   const handleEditStudent = (student: Student) => {
     setEditingStudent(student);
     setEditDialogOpen(true);
@@ -127,6 +146,7 @@ const Trombinoscope: React.FC = () => {
         email: newStudent.email,
         studentNumber: newStudent.studentNumber,
         photo: `https://via.placeholder.com/150/4CAF50/white?text=${newStudent.firstName[0]}${newStudent.lastName[0]}`,
+        absenceCount: newStudent.absenceCount || 0,
       };
       addStudent(student);
       setNewStudent({
@@ -162,12 +182,22 @@ const Trombinoscope: React.FC = () => {
   };
 
   const renderGalleryView = () => (
-    <Grid container spacing={3} id="trombinoscope-gallery">
+    <Grid 
+      container 
+      spacing={{ xs: 2, sm: 3, md: 3 }} 
+      id="trombinoscope-gallery"
+      sx={{
+        '& .MuiGrid-item': {
+          display: 'flex',
+          flexDirection: 'column'
+        }
+      }}
+    >
       {students.map((student) => {
         const studentProjects = getStudentProjects(student.id);
         
         return (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={student.id}>
+          <Grid item xs={12} sm={6} md={4} lg={3} xl={2.4} key={student.id}>
             <Card
               sx={{
                 cursor: 'pointer',
@@ -178,10 +208,11 @@ const Trombinoscope: React.FC = () => {
                 },
                 border: selectedStudents.includes(student.id) ? '2px solid' : 'none',
                 borderColor: 'primary.main',
-                height: '100%',
-                minHeight: 420,
+                height: 480,
                 display: 'flex',
                 flexDirection: 'column',
+                position: 'relative',
+                overflow: 'hidden',
               }}
               onClick={() => handleStudentSelect(student.id)}
             >
@@ -209,18 +240,108 @@ const Trombinoscope: React.FC = () => {
                   {getStudentInitials(student.firstName, student.lastName)}
                 </Box>
               )}
-              <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+              <CardContent sx={{ 
+                flexGrow: 1, 
+                display: 'flex', 
+                flexDirection: 'column',
+                p: 1.5,
+                '&:last-child': { pb: 1.5 },
+                height: '100%'
+              }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'flex-start', 
+                  mb: 1.5 
+                }}>
                   <Box sx={{ flexGrow: 1, pr: 1 }}>
-                    <Typography variant="h6" component="div" sx={{ mb: 0.5 }}>
+                    <Typography 
+                      variant="h6" 
+                      component="div" 
+                      sx={{ 
+                        mb: 0,
+                        fontSize: '1rem',
+                        fontWeight: 600,
+                        lineHeight: 1.2,
+                        flex: 1,
+                        pr: 1
+                      }}
+                    >
                       {student.firstName} {student.lastName}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
-                      {student.studentNumber}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem', wordBreak: 'break-all' }}>
+                    <Typography 
+                      variant="body2" 
+                      color="text.secondary" 
+                      sx={{ 
+                        fontSize: '0.75rem', 
+                        wordBreak: 'break-all', 
+                        mb: 1.5,
+                        lineHeight: 1.3
+                      }}
+                    >
                       {student.email}
                     </Typography>
+                    
+                    {/* Compteur d'absences */}
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      gap: 0.8, 
+                      mb: 1,
+                      justifyContent: 'center'
+                    }}>
+                      <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
+                        Absences:
+                      </Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.3 }}>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRemoveAbsence(student.id);
+                          }}
+                          disabled={student.absenceCount === 0}
+                          sx={{ 
+                            width: 22, 
+                            height: 22,
+                            backgroundColor: student.absenceCount > 0 ? 'rgba(244, 67, 54, 0.1)' : 'rgba(0,0,0,0.04)',
+                            '&:hover': {
+                              backgroundColor: student.absenceCount > 0 ? 'rgba(244, 67, 54, 0.2)' : 'rgba(0,0,0,0.08)',
+                            }
+                          }}
+                        >
+                          <RemoveIcon fontSize="small" />
+                        </IconButton>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            minWidth: 20, 
+                            textAlign: 'center',
+                            fontWeight: 'bold',
+                            color: student.absenceCount > 0 ? 'error.main' : 'text.secondary'
+                          }}
+                        >
+                          {student.absenceCount}
+                        </Typography>
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddAbsence(student.id);
+                          }}
+                          sx={{ 
+                            width: 22, 
+                            height: 22,
+                            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                            '&:hover': {
+                              backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                            }
+                          }}
+                        >
+                          <AddAbsenceIcon fontSize="small" />
+                        </IconButton>
+                      </Box>
+                    </Box>
                   </Box>
                   <IconButton
                     size="small"
@@ -240,40 +361,81 @@ const Trombinoscope: React.FC = () => {
                   </IconButton>
                 </Box>
 
-                {/* Section des projets */}
-                <Box sx={{ mt: 'auto', pt: 2 }}>
-                  <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
+                {/* Section des projets - Hauteur fixe */}
+                <Box sx={{ 
+                  mt: 'auto',
+                  height: 80,
+                  pt: 1,
+                  borderTop: '1px solid rgba(0,0,0,0.08)',
+                  display: 'flex',
+                  flexDirection: 'column'
+                }}>
+                  <Typography 
+                    variant="body2" 
+                    fontWeight="bold" 
+                    sx={{ 
+                      mb: 0.5,
+                      fontSize: '0.75rem',
+                      color: 'text.primary'
+                    }}
+                  >
                     Projets ({studentProjects.length})
                   </Typography>
-                  {studentProjects.length > 0 ? (
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                      {studentProjects.slice(0, 3).map((project) => (
-                        <Chip
-                          key={project.id}
-                          label={project.name}
-                          size="small"
-                          sx={{
-                            backgroundColor: getModuleColor(project.moduleId),
-                            color: 'white',
-                            fontSize: '0.7rem',
-                            height: 20,
-                            '& .MuiChip-label': {
-                              px: 1
-                            }
-                          }}
-                        />
-                      ))}
-                      {studentProjects.length > 3 && (
-                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                          +{studentProjects.length - 3} autres projets
-                        </Typography>
-                      )}
-                    </Box>
-                  ) : (
-                    <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-                      Aucun projet assigné
-                    </Typography>
-                  )}
+                  <Box sx={{ 
+                    flex: 1,
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    gap: 0.3,
+                    overflow: 'hidden'
+                  }}>
+                    {studentProjects.length > 0 ? (
+                      <>
+                        {studentProjects.slice(0, 2).map((project) => (
+                          <Chip
+                            key={project.id}
+                            label={project.name}
+                            size="small"
+                            sx={{
+                              backgroundColor: getModuleColor(project.moduleId),
+                              color: 'white',
+                              fontSize: '0.65rem',
+                              height: 18,
+                              '& .MuiChip-label': {
+                                px: 0.8,
+                                fontWeight: 500
+                              }
+                            }}
+                          />
+                        ))}
+                        {studentProjects.length > 2 && (
+                          <Typography 
+                            variant="caption" 
+                            color="text.secondary" 
+                            sx={{ 
+                              fontSize: '0.65rem',
+                              textAlign: 'center',
+                              mt: 0.2
+                            }}
+                          >
+                            +{studentProjects.length - 2} autres
+                          </Typography>
+                        )}
+                      </>
+                    ) : (
+                      <Typography 
+                        variant="caption" 
+                        color="text.secondary" 
+                        sx={{ 
+                          fontSize: '0.65rem',
+                          fontStyle: 'italic',
+                          textAlign: 'center',
+                          mt: 1
+                        }}
+                      >
+                        Aucun projet
+                      </Typography>
+                    )}
+                  </Box>
                 </Box>
               </CardContent>
             </Card>
@@ -299,7 +461,7 @@ const Trombinoscope: React.FC = () => {
             <TableCell>Nom</TableCell>
             <TableCell>Prénom</TableCell>
             <TableCell>Email</TableCell>
-            <TableCell>Numéro Étudiant</TableCell>
+            <TableCell>Absences</TableCell>
             <TableCell>Projets</TableCell>
             <TableCell>Actions</TableCell>
           </TableRow>
@@ -333,7 +495,56 @@ const Trombinoscope: React.FC = () => {
                 <TableCell>{student.lastName}</TableCell>
                 <TableCell>{student.firstName}</TableCell>
                 <TableCell>{student.email}</TableCell>
-                <TableCell>{student.studentNumber}</TableCell>
+                <TableCell>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveAbsence(student.id);
+                      }}
+                      disabled={student.absenceCount === 0}
+                      sx={{ 
+                        width: 24, 
+                        height: 24,
+                        backgroundColor: student.absenceCount > 0 ? 'rgba(244, 67, 54, 0.1)' : 'rgba(0,0,0,0.04)',
+                        '&:hover': {
+                          backgroundColor: student.absenceCount > 0 ? 'rgba(244, 67, 54, 0.2)' : 'rgba(0,0,0,0.08)',
+                        }
+                      }}
+                    >
+                      <RemoveIcon fontSize="small" />
+                    </IconButton>
+                    <Typography 
+                      variant="body2" 
+                      sx={{ 
+                        minWidth: 20, 
+                        textAlign: 'center',
+                        fontWeight: 'bold',
+                        color: student.absenceCount > 0 ? 'error.main' : 'text.secondary'
+                      }}
+                    >
+                      {student.absenceCount}
+                    </Typography>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddAbsence(student.id);
+                      }}
+                      sx={{ 
+                        width: 24, 
+                        height: 24,
+                        backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                        }
+                      }}
+                    >
+                      <AddAbsenceIcon fontSize="small" />
+                    </IconButton>
+                  </Box>
+                </TableCell>
                 <TableCell>
                   <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, maxWidth: 200 }}>
                     {studentProjects.length > 0 ? (
@@ -443,6 +654,14 @@ const Trombinoscope: React.FC = () => {
         </Button>
         <Button
           variant="outlined"
+          color="info"
+          onClick={migrateStudents}
+          sx={{ ml: 2 }}
+        >
+          Corriger Absences
+        </Button>
+        <Button
+          variant="outlined"
           color="warning"
           onClick={resetData}
           sx={{ ml: 2 }}
@@ -518,12 +737,47 @@ const Trombinoscope: React.FC = () => {
               onChange={(e) => setEditingStudent(prev => prev ? { ...prev, email: e.target.value } : null)}
               fullWidth
             />
-            <TextField
-              label="Numéro Étudiant"
-              value={editingStudent?.studentNumber || ''}
-              onChange={(e) => setEditingStudent(prev => prev ? { ...prev, studentNumber: e.target.value } : null)}
-              fullWidth
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body1" sx={{ minWidth: 100 }}>
+                Absences:
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <IconButton
+                  onClick={() => setEditingStudent(prev => prev ? { ...prev, absenceCount: Math.max(0, (prev.absenceCount || 0) - 1) } : null)}
+                  disabled={!editingStudent || (editingStudent.absenceCount || 0) === 0}
+                  sx={{ 
+                    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(244, 67, 54, 0.2)',
+                    }
+                  }}
+                >
+                  <RemoveIcon />
+                </IconButton>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    minWidth: 40, 
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    color: editingStudent && (editingStudent.absenceCount || 0) > 0 ? 'error.main' : 'text.secondary'
+                  }}
+                >
+                  {editingStudent?.absenceCount || 0}
+                </Typography>
+                <IconButton
+                  onClick={() => setEditingStudent(prev => prev ? { ...prev, absenceCount: (prev.absenceCount || 0) + 1 } : null)}
+                  sx={{ 
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                    }
+                  }}
+                >
+                  <AddAbsenceIcon />
+                </IconButton>
+              </Box>
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>
@@ -597,12 +851,47 @@ const Trombinoscope: React.FC = () => {
               onChange={(e) => setNewStudent(prev => ({ ...prev, email: e.target.value }))}
               fullWidth
             />
-            <TextField
-              label="Numéro Étudiant"
-              value={newStudent.studentNumber || ''}
-              onChange={(e) => setNewStudent(prev => ({ ...prev, studentNumber: e.target.value }))}
-              fullWidth
-            />
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Typography variant="body1" sx={{ minWidth: 100 }}>
+                Absences:
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <IconButton
+                  onClick={() => setNewStudent(prev => ({ ...prev, absenceCount: Math.max(0, (prev.absenceCount || 0) - 1) }))}
+                  disabled={(newStudent.absenceCount || 0) === 0}
+                  sx={{ 
+                    backgroundColor: 'rgba(244, 67, 54, 0.1)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(244, 67, 54, 0.2)',
+                    }
+                  }}
+                >
+                  <RemoveIcon />
+                </IconButton>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    minWidth: 40, 
+                    textAlign: 'center',
+                    fontWeight: 'bold',
+                    color: (newStudent.absenceCount || 0) > 0 ? 'error.main' : 'text.secondary'
+                  }}
+                >
+                  {newStudent.absenceCount || 0}
+                </Typography>
+                <IconButton
+                  onClick={() => setNewStudent(prev => ({ ...prev, absenceCount: (prev.absenceCount || 0) + 1 }))}
+                  sx={{ 
+                    backgroundColor: 'rgba(76, 175, 80, 0.1)',
+                    '&:hover': {
+                      backgroundColor: 'rgba(76, 175, 80, 0.2)',
+                    }
+                  }}
+                >
+                  <AddAbsenceIcon />
+                </IconButton>
+              </Box>
+            </Box>
           </Box>
         </DialogContent>
         <DialogActions>

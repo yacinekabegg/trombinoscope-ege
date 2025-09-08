@@ -5,6 +5,7 @@ export interface Student {
   email: string;
   studentNumber: string;
   photo?: string;
+  absenceCount: number;
 }
 
 export interface Module {
@@ -27,6 +28,10 @@ export interface Project {
   comments?: string;
   createdAt: Date;
   updatedAt: Date;
+  // Nouveau: type de suivi du projet
+  trackingType: ProjectTrackingType;
+  // Nouveau: statut d'étape si applicable
+  stepStatus?: ProjectStepStatus;
 }
 
 export enum ProjectStatus {
@@ -34,6 +39,18 @@ export enum ProjectStatus {
   SUBMITTED = 'Remis',
   TO_CORRECT = 'À corriger',
   VALIDATED = 'Validé'
+}
+
+export enum ProjectTrackingType {
+  SIMPLE = 'simple',
+  STEP_BY_STEP = 'step_by_step'
+}
+
+export enum ProjectStepStatus {
+  STEP_1 = 'Point d\'étape 1',
+  STEP_2 = 'Point d\'étape 2', 
+  VALIDATION_DATES = 'Validation des dates des restitutions',
+  SUBMISSION = 'Remise des travaux'
 }
 
 export interface ProjectWithDetails extends Project {

@@ -36,7 +36,7 @@ import {
 } from '@mui/icons-material';
 import { format, isAfter } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Project, ProjectStatus, Student } from '../types';
+import { Project, ProjectStatus, ProjectTrackingType, ProjectStepStatus, Student } from '../types';
 import { useFirebaseContext } from '../context/FirebaseContext';
 import { getStudentInitials } from '../utils/photoUtils';
 
@@ -47,6 +47,7 @@ const Projects: React.FC = () => {
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [selectedStudents, setSelectedStudents] = useState<Student[]>([]);
   const [filteredModule, setFilteredModule] = useState<string | null>(null);
+  const [trackingType, setTrackingType] = useState<ProjectTrackingType>(ProjectTrackingType.SIMPLE);
 
   // Gérer le filtre par module depuis la navigation
   useEffect(() => {
@@ -97,6 +98,7 @@ const Projects: React.FC = () => {
   const handleEditProject = (project: Project) => {
     setEditingProject(project);
     setSelectedStudents(getProjectStudents(project));
+    setTrackingType(project.trackingType || ProjectTrackingType.SIMPLE);
     setEditDialogOpen(true);
   };
 
@@ -105,6 +107,8 @@ const Projects: React.FC = () => {
       const updatedProject = {
         ...editingProject,
         studentIds: selectedStudents.map(s => s.id),
+        trackingType: trackingType,
+        stepStatus: trackingType === ProjectTrackingType.STEP_BY_STEP ? editingProject.stepStatus : undefined,
         updatedAt: new Date(),
       };
       
@@ -120,6 +124,7 @@ const Projects: React.FC = () => {
     setEditDialogOpen(false);
     setEditingProject(null);
     setSelectedStudents([]);
+    setTrackingType(ProjectTrackingType.SIMPLE);
   };
 
   const handleAddProject = () => {
@@ -131,11 +136,14 @@ const Projects: React.FC = () => {
       deadline: new Date(),
       studentIds: [],
       status: ProjectStatus.NOT_SUBMITTED,
+      trackingType: ProjectTrackingType.SIMPLE,
+      stepStatus: undefined,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
     setEditingProject(newProject);
     setSelectedStudents([]);
+    setTrackingType(ProjectTrackingType.SIMPLE);
     setEditDialogOpen(true);
   };
 
@@ -153,6 +161,7 @@ const Projects: React.FC = () => {
       deleteProject(projectId);
     }
   };
+
 
   return (
     <Box>
@@ -317,21 +326,36 @@ const Projects: React.FC = () => {
 
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Chip
-                      label={project.status}
-                      color={getStatusColor(project.status) as any}
+                      label={project.trackingType === ProjectTrackingType.STEP_BY_STEP ? project.stepStatus : project.status}
+                      color={project.trackingType === ProjectTrackingType.STEP_BY_STEP ? 'info' : getStatusColor(project.status) as any}
                       size="small"
                     />
                     <FormControl size="small" sx={{ minWidth: 120 }}>
                       <Select
-                        value={project.status}
-                        onChange={(e) => handleStatusChange(project.id, e.target.value as ProjectStatus)}
+                        value={project.trackingType === ProjectTrackingType.STEP_BY_STEP ? project.stepStatus : project.status}
+                        onChange={(e) => {
+                          if (project.trackingType === ProjectTrackingType.STEP_BY_STEP) {
+                            const updatedProject = { ...project, stepStatus: e.target.value as ProjectStepStatus, updatedAt: new Date() };
+                            updateProject(updatedProject);
+                          } else {
+                            handleStatusChange(project.id, e.target.value as ProjectStatus);
+                          }
+                        }}
                         size="small"
                       >
-                        {Object.values(ProjectStatus).map((status) => (
-                          <MenuItem key={status} value={status}>
-                            {status}
-                          </MenuItem>
-                        ))}
+                        {project.trackingType === ProjectTrackingType.STEP_BY_STEP ? (
+                          Object.values(ProjectStepStatus).map((status) => (
+                            <MenuItem key={status} value={status}>
+                              {status}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          Object.values(ProjectStatus).map((status) => (
+                            <MenuItem key={status} value={status}>
+                              {status}
+                            </MenuItem>
+                          ))
+                        )}
                       </Select>
                     </FormControl>
                   </Box>
@@ -406,6 +430,54 @@ const Projects: React.FC = () => {
               InputLabelProps={{ shrink: true }}
               required
             />
+
+            {/* Choix du type de suivi */}
+            <FormControl fullWidth>
+              <InputLabel>Type de suivi</InputLabel>
+              <Select
+                value={trackingType}
+                onChange={(e) => setTrackingType(e.target.value as ProjectTrackingType)}
+                label="Type de suivi"
+              >
+                <MenuItem value={ProjectTrackingType.SIMPLE}>
+                  Suivi simple (Non remis, Remis, À corriger, Validé)
+                </MenuItem>
+                <MenuItem value={ProjectTrackingType.STEP_BY_STEP}>
+                  Suivi par étapes (Point d'étape 1, Point d'étape 2, Validation des dates, Remise des travaux)
+                </MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* Statut selon le type de suivi */}
+            {trackingType === ProjectTrackingType.SIMPLE ? (
+              <FormControl fullWidth>
+                <InputLabel>Statut</InputLabel>
+                <Select
+                  value={editingProject?.status || ProjectStatus.NOT_SUBMITTED}
+                  onChange={(e) => setEditingProject(prev => prev ? { ...prev, status: e.target.value as ProjectStatus } : null)}
+                  label="Statut"
+                >
+                  <MenuItem value={ProjectStatus.NOT_SUBMITTED}>Non remis</MenuItem>
+                  <MenuItem value={ProjectStatus.SUBMITTED}>Remis</MenuItem>
+                  <MenuItem value={ProjectStatus.TO_CORRECT}>À corriger</MenuItem>
+                  <MenuItem value={ProjectStatus.VALIDATED}>Validé</MenuItem>
+                </Select>
+              </FormControl>
+            ) : (
+              <FormControl fullWidth>
+                <InputLabel>Étape du projet</InputLabel>
+                <Select
+                  value={editingProject?.stepStatus || ProjectStepStatus.STEP_1}
+                  onChange={(e) => setEditingProject(prev => prev ? { ...prev, stepStatus: e.target.value as ProjectStepStatus } : null)}
+                  label="Étape du projet"
+                >
+                  <MenuItem value={ProjectStepStatus.STEP_1}>Point d'étape 1</MenuItem>
+                  <MenuItem value={ProjectStepStatus.STEP_2}>Point d'étape 2</MenuItem>
+                  <MenuItem value={ProjectStepStatus.VALIDATION_DATES}>Validation des dates des restitutions</MenuItem>
+                  <MenuItem value={ProjectStepStatus.SUBMISSION}>Remise des travaux</MenuItem>
+                </Select>
+              </FormControl>
+            )}
 
             <Autocomplete
               multiple
