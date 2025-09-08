@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -27,6 +28,7 @@ import { useAppContext } from '../context/AppContext';
 
 const Modules: React.FC = () => {
   const { modules, projects, updateModule, addModule } = useAppContext();
+  const navigate = useNavigate();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
 
@@ -171,8 +173,13 @@ const Modules: React.FC = () => {
                     size="small"
                     startIcon={<ViewIcon />}
                     onClick={() => {
-                      // Navigation vers la page des projets du module
-                      console.log(`Voir projets du module ${module.name}`);
+                      // Navigation vers la page des projets avec filtre par module
+                      navigate('/projects', { 
+                        state: { 
+                          filterModule: module.id,
+                          moduleName: module.name 
+                        } 
+                      });
                     }}
                   >
                     Voir Projets

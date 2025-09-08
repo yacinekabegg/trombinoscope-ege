@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -31,6 +32,7 @@ import {
   Assignment as ProjectIcon,
   Schedule as ScheduleIcon,
   Grade as GradeIcon,
+  FilterList as FilterIcon,
 } from '@mui/icons-material';
 import { format, isAfter } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -40,13 +42,27 @@ import { getStudentInitials } from '../utils/photoUtils';
 
 const Projects: React.FC = () => {
   const { projects, students, modules, updateProject, addProject, deleteProject } = useAppContext();
+  const location = useLocation();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [selectedStudents, setSelectedStudents] = useState<Student[]>([]);
+  const [filteredModule, setFilteredModule] = useState<string | null>(null);
+
+  // Gérer le filtre par module depuis la navigation
+  useEffect(() => {
+    if (location.state?.filterModule) {
+      setFilteredModule(location.state.filterModule);
+    }
+  }, [location.state]);
 
   const getModuleName = (moduleId: string) => {
     return modules.find(m => m.id === moduleId)?.name || 'Module inconnu';
   };
+
+  // Filtrer les projets selon le module sélectionné
+  const filteredProjects = filteredModule 
+    ? projects.filter(project => project.moduleId === filteredModule)
+    : projects;
 
   const getModuleColor = (moduleId: string) => {
     return modules.find(m => m.id === moduleId)?.color || '#1976d2';
@@ -141,9 +157,23 @@ const Projects: React.FC = () => {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4" component="h1">
-          Gestion des Projets
-        </Typography>
+        <Box>
+          <Typography variant="h4" component="h1">
+            Gestion des Projets
+          </Typography>
+          {filteredModule && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+              <FilterIcon fontSize="small" color="primary" />
+              <Chip
+                label={`Module: ${getModuleName(filteredModule)}`}
+                color="primary"
+                variant="outlined"
+                onDelete={() => setFilteredModule(null)}
+                size="small"
+              />
+            </Box>
+          )}
+        </Box>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
@@ -154,7 +184,7 @@ const Projects: React.FC = () => {
       </Box>
 
       <Grid container spacing={3}>
-        {projects.map((project) => {
+        {filteredProjects.map((project) => {
           const projectStudents = getProjectStudents(project);
           const moduleName = getModuleName(project.moduleId);
           const moduleColor = getModuleColor(project.moduleId);
