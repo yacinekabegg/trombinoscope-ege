@@ -156,28 +156,56 @@ const Projects: React.FC = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Box>
-          <Typography variant="h4" component="h1">
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
+        <Box sx={{ flex: 1 }}>
+          <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
             Gestion des Projets
           </Typography>
-          {filteredModule && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-              <FilterIcon fontSize="small" color="primary" />
+          
+          {/* Filtre par module */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Filtrer par module</InputLabel>
+              <Select
+                value={filteredModule || ''}
+                onChange={(e) => setFilteredModule(e.target.value || null)}
+                label="Filtrer par module"
+              >
+                <MenuItem value="">
+                  <em>Tous les modules</em>
+                </MenuItem>
+                {modules.map((module) => (
+                  <MenuItem key={module.id} value={module.id}>
+                    {module.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            
+            {filteredModule && (
               <Chip
                 label={`Module: ${getModuleName(filteredModule)}`}
                 color="primary"
                 variant="outlined"
                 onDelete={() => setFilteredModule(null)}
                 size="small"
+                icon={<FilterIcon />}
               />
-            </Box>
-          )}
+            )}
+          </Box>
+          
+          {/* Compteur de projets */}
+          <Typography variant="body2" color="text.secondary">
+            {filteredProjects.length} projet{filteredProjects.length > 1 ? 's' : ''} 
+            {filteredModule && ` dans le module "${getModuleName(filteredModule)}"`}
+          </Typography>
         </Box>
+        
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleAddProject}
+          sx={{ ml: 2 }}
         >
           Nouveau Projet
         </Button>
