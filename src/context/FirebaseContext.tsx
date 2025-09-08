@@ -113,6 +113,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
   const updateStudent = async (student: Student) => {
     try {
       await studentService.save(student);
+      setStudents(prev => prev.map(s => s.id === student.id ? student : s));
     } catch (err) {
       console.error('Erreur lors de la mise à jour de l\'étudiant:', err);
       setError('Erreur lors de la sauvegarde');
@@ -122,6 +123,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
   const addStudent = async (student: Student) => {
     try {
       await studentService.save(student);
+      setStudents(prev => [...prev, student]);
     } catch (err) {
       console.error('Erreur lors de l\'ajout de l\'étudiant:', err);
       setError('Erreur lors de la sauvegarde');
@@ -131,6 +133,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
   const updateProject = async (project: Project) => {
     try {
       await projectService.save(project);
+      setProjects(prev => prev.map(p => p.id === project.id ? project : p));
     } catch (err) {
       console.error('Erreur lors de la mise à jour du projet:', err);
       setError('Erreur lors de la sauvegarde');
@@ -140,6 +143,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
   const addProject = async (project: Project) => {
     try {
       await projectService.save(project);
+      setProjects(prev => [...prev, project]);
     } catch (err) {
       console.error('Erreur lors de l\'ajout du projet:', err);
       setError('Erreur lors de la sauvegarde');
@@ -149,6 +153,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
   const deleteProject = async (projectId: string) => {
     try {
       await projectService.delete(projectId);
+      setProjects(prev => prev.filter(p => p.id !== projectId));
     } catch (err) {
       console.error('Erreur lors de la suppression du projet:', err);
       setError('Erreur lors de la suppression');
@@ -158,6 +163,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
   const updateModule = async (module: Module) => {
     try {
       await moduleService.save(module);
+      setModules(prev => prev.map(m => m.id === module.id ? module : m));
     } catch (err) {
       console.error('Erreur lors de la mise à jour du module:', err);
       setError('Erreur lors de la sauvegarde');
@@ -167,6 +173,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({ children }) 
   const addModule = async (module: Module) => {
     try {
       await moduleService.save(module);
+      setModules(prev => [...prev, module]);
     } catch (err) {
       console.error('Erreur lors de l\'ajout du module:', err);
       setError('Erreur lors de la sauvegarde');
