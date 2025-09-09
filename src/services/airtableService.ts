@@ -147,9 +147,7 @@ export const projectService = {
         stepStatus: project.stepStatus,
         submissionDate: project.submissionDate ? project.submissionDate.toISOString().split('T')[0] : undefined,
         grade: project.grade,
-        comments: project.comments,
-        createdAt: project.createdAt.toISOString(),
-        updatedAt: new Date().toISOString()
+        comments: project.comments
       };
 
       if (project.id && project.id.startsWith('rec')) {
