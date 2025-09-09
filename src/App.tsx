@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box } from '@mui/material';
-import { FirebaseProvider } from './context/FirebaseContext';
+import { AirtableProvider } from './context/AirtableContext';
 import Navigation from './components/Navigation';
 import Trombinoscope from './pages/Trombinoscope';
 import Dashboard from './pages/Dashboard';
@@ -37,7 +37,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <FirebaseProvider>
+      <AirtableProvider>
         <Router>
           <Box sx={{ display: 'flex', minHeight: '100vh' }}>
             <Navigation />
@@ -61,7 +61,7 @@ function App() {
             </Box>
           </Box>
         </Router>
-      </FirebaseProvider>
+      </AirtableProvider>
     </ThemeProvider>
   );
 }

@@ -38,14 +38,14 @@ import {
   Add as AddAbsenceIcon,
 } from '@mui/icons-material';
 import { Student } from '../types';
-import { useFirebaseContext } from '../context/FirebaseContext';
+import { useAirtableContext } from '../context/AirtableContext';
 import { exportToExcel, exportToPDF, exportTrombinoscopeToPDF } from '../utils/exportUtils';
 import { getStudentInitials } from '../utils/photoUtils';
 
 type ViewMode = 'gallery' | 'table';
 
 const Trombinoscope: React.FC = () => {
-  const { students, projects, modules, updateStudent, addStudent, resetData, migrateStudents } = useFirebaseContext();
+  const { students, projects, modules, updateStudent, addStudent, resetData, migrateStudents } = useAirtableContext();
   const [viewMode, setViewMode] = useState<ViewMode>('gallery');
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);

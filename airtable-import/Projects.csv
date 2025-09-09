@@ -1,0 +1,5 @@
+name,description,deadline,status,trackingType,stepStatus,submissionDate,grade,comments
+Audit Stratégique Entreprise A,Réalisation d'un audit complet de l'entreprise A,2024-03-15,Remis,simple,,2024-03-14,16,Excellent travail analyse très pertinente
+Challenge Innovation Durable,Défi d'innovation pour le développement durable,2024-04-20,Validé,simple,,2024-04-18,18,Projet innovant et bien structuré
+Conseil en Transformation Digitale,Conseil en transformation digitale pour une PME,2024-05-10,À corriger,simple,,2024-05-08,12,À améliorer sur la partie technique
+Projet avec Suivi par Étapes,Exemple de projet utilisant le suivi par étapes,2024-08-30,Non remis,step_by_step,Point d'étape 1,,,

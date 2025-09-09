@@ -37,7 +37,7 @@ import {
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Project, ProjectStatus, Student, ProjectWithDetails } from '../types';
-import { useFirebaseContext } from '../context/FirebaseContext';
+import { useAirtableContext } from '../context/AirtableContext';
 import { getStudentInitials } from '../utils/photoUtils';
 import { exportToExcel, exportToPDF } from '../utils/exportUtils';
 
@@ -64,7 +64,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const Dashboard: React.FC = () => {
-  const { projects, students, modules } = useFirebaseContext();
+  const { projects, students, modules } = useAirtableContext();
   const [tabValue, setTabValue] = useState(0);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [studentDetailOpen, setStudentDetailOpen] = useState(false);

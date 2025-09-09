@@ -1,0 +1,432 @@
+{
+  "name": "Trombinoscope EGE",
+  "description": "Base de données pour le suivi des étudiants EGE",
+  "tables": [
+    {
+      "name": "Students",
+      "description": "Liste des étudiants",
+      "fields": [
+        {
+          "name": "firstName",
+          "type": "singleLineText",
+          "description": "Prénom de l'étudiant"
+        },
+        {
+          "name": "lastName", 
+          "type": "singleLineText",
+          "description": "Nom de famille de l'étudiant"
+        },
+        {
+          "name": "email",
+          "type": "email",
+          "description": "Adresse email de l'étudiant"
+        },
+        {
+          "name": "studentNumber",
+          "type": "singleLineText", 
+          "description": "Numéro d'étudiant"
+        },
+        {
+          "name": "photo",
+          "type": "url",
+          "description": "URL de la photo de l'étudiant"
+        },
+        {
+          "name": "absenceCount",
+          "type": "number",
+          "description": "Nombre d'absences"
+        }
+      ],
+      "records": [
+        {
+          "firstName": "Juliette",
+          "lastName": "ARMERO",
+          "email": "juliette.armero@agroparistech.fr",
+          "studentNumber": "EGE2024001",
+          "photo": "https://synapses.agroparistech.fr/images/photos/758f1d70-64a6-418a-a3a8-2871e526a45a.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Emilie",
+          "lastName": "ARNAUD",
+          "email": "emilie.arnaud@agroparistech.fr",
+          "studentNumber": "EGE2024002",
+          "photo": "https://synapses.agroparistech.fr/images/photos/caaf4428-562e-4516-8fc4-d30f30a5718a.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Clemence",
+          "lastName": "AVIGNON",
+          "email": "clemence.avignon@agroparistech.fr",
+          "studentNumber": "EGE2024003",
+          "photo": "https://synapses.agroparistech.fr/images/photos/8b8b8b8b-8b8b-8b8b-8b8b-8b8b8b8b8b8b.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Clémence",
+          "lastName": "BELGNAOUI",
+          "email": "clemence.belgnaoui@agroparistech.fr",
+          "studentNumber": "EGE2024004",
+          "photo": "https://synapses.agroparistech.fr/images/photos/9c9c9c9c-9c9c-9c9c-9c9c-9c9c9c9c9c9c.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Clara",
+          "lastName": "BEZIER",
+          "email": "clara.bezier@agroparistech.fr",
+          "studentNumber": "EGE2024005",
+          "photo": "https://synapses.agroparistech.fr/images/photos/f572a8f5-269a-4fd4-a807-54abdc6ef0ea.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Melissandre",
+          "lastName": "BISCHOFF",
+          "email": "melissandre.bischoff@agroparistech.fr",
+          "studentNumber": "EGE2024006",
+          "photo": "https://synapses.agroparistech.fr/images/photos/8933db6f-2293-4d82-8738-146cf0b33694.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Louis",
+          "lastName": "BODIN",
+          "email": "louis.bodin@agroparistech.fr",
+          "studentNumber": "EGE2024007",
+          "photo": "https://synapses.agroparistech.fr/images/photos/165de92c-e015-4401-8a63-d379e17828ec.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Paul",
+          "lastName": "BONNEFONT",
+          "email": "paul.bonnefont@agroparistech.fr",
+          "studentNumber": "EGE2024008",
+          "photo": "https://synapses.agroparistech.fr/images/photos/6c440665-81cd-4da7-915a-2a63c4b3e07a.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Pierre",
+          "lastName": "BOURDIER",
+          "email": "pierre.bourdier@agroparistech.fr",
+          "studentNumber": "EGE2024009",
+          "photo": "https://synapses.agroparistech.fr/images/photos/6bb288d6-e8fd-4f0d-8fc6-76535cf7e219.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Clemence",
+          "lastName": "BRIAND",
+          "email": "clemence.briand@agroparistech.fr",
+          "studentNumber": "EGE2024010",
+          "photo": "https://synapses.agroparistech.fr/images/photos/dc435f5c-3df5-4c20-a0a3-e8829acae5ff.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Adrien",
+          "lastName": "CABANETTES",
+          "email": "adrien.cabanettes@agroparistech.fr",
+          "studentNumber": "EGE2024011",
+          "photo": "https://synapses.agroparistech.fr/images/photos/9c269fa6-04fd-40c8-a05d-3809923c0da2.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Camille",
+          "lastName": "DARMAILLE",
+          "email": "camille.darmaille@agroparistech.fr",
+          "studentNumber": "EGE2024012",
+          "photo": "https://synapses.agroparistech.fr/images/photos/bc53525b-21ca-4296-b97f-afad0c81e782.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Gabrielle",
+          "lastName": "DESCAMPS",
+          "email": "gabrielle.descamps@agroparistech.fr",
+          "studentNumber": "EGE2024013",
+          "photo": "https://synapses.agroparistech.fr/images/photos/6141a0fc-8b2c-4db5-9ebb-48cdb25f03e1.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Julie",
+          "lastName": "DUGIT",
+          "email": "julie.dugit@agroparistech.fr",
+          "studentNumber": "EGE2024014",
+          "photo": "https://synapses.agroparistech.fr/images/photos/3cf73364-d00f-4c68-a5d8-b3b27c201ad6.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Lola",
+          "lastName": "FERNANDEZ",
+          "email": "lola.fernandez@agroparistech.fr",
+          "studentNumber": "EGE2024015",
+          "photo": "https://synapses.agroparistech.fr/images/photos/44b1048b-a1bf-4aac-8990-1eddb182ccd4.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Camille",
+          "lastName": "GARREL",
+          "email": "camille.garrel@agroparistech.fr",
+          "studentNumber": "EGE2024016",
+          "photo": "https://synapses.agroparistech.fr/images/photos/ee1dc80e-c913-41fa-9b8e-126e036018f1.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Anis",
+          "lastName": "HAMMADI",
+          "email": "anis.hammadi@agroparistech.fr",
+          "studentNumber": "EGE2024017",
+          "photo": "https://synapses.agroparistech.fr/images/photos/3dcfde4a-1417-4884-88a8-1acd6ced840f.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Clemence",
+          "lastName": "JOULAIN",
+          "email": "clemence.joulain@agroparistech.fr",
+          "studentNumber": "EGE2024018",
+          "photo": "https://synapses.agroparistech.fr/images/photos/d9fb357a-5473-4bca-a2f1-69023cb605f5.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Agathe",
+          "lastName": "LAFARGE",
+          "email": "agathe.lafarge@agroparistech.fr",
+          "studentNumber": "EGE2024019",
+          "photo": "https://synapses.agroparistech.fr/images/photos/74a65fc0-294e-4417-8a7f-e36820d8dc3e.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Leonie",
+          "lastName": "LEMARE",
+          "email": "leonie.lemare@agroparistech.fr",
+          "studentNumber": "EGE2024020",
+          "photo": "https://synapses.agroparistech.fr/images/photos/f8e4c1e1-b33e-4338-8b77-1c3f4a48ce22.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Camille",
+          "lastName": "MICHAUX",
+          "email": "camille.michaux@agroparistech.fr",
+          "studentNumber": "EGE2024021",
+          "photo": "https://synapses.agroparistech.fr/images/photos/4224f7d0-9054-4d4d-b0f9-97aab6f6765a.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Clotilde",
+          "lastName": "REYNAUD",
+          "email": "clotilde.reynaud@agroparistech.fr",
+          "studentNumber": "EGE2024022",
+          "photo": "https://synapses.agroparistech.fr/images/photos/c2f232f6-40d2-4b49-a613-e79033e3de72.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Matthieu",
+          "lastName": "ROMANN",
+          "email": "matthieu.romann@agroparistech.fr",
+          "studentNumber": "EGE2024023",
+          "photo": "https://synapses.agroparistech.fr/images/photos/46bde109-5ff2-455d-a65e-60fab12a9e16.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Morgane",
+          "lastName": "SAUVAGE",
+          "email": "morgane.sauvage@agroparistech.fr",
+          "studentNumber": "EGE2024024",
+          "photo": "https://synapses.agroparistech.fr/images/photos/c274547b-7f33-4640-a417-7cdbf3da9c6b.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Anna",
+          "lastName": "TONDU",
+          "email": "anna.tondu@agroparistech.fr",
+          "studentNumber": "EGE2024025",
+          "photo": "https://synapses.agroparistech.fr/images/photos/70296674-0bfc-4a1d-a83d-a6d96bf91939.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Quitterie",
+          "lastName": "VUILLEMIN",
+          "email": "quitterie.vuillemin@agroparistech.fr",
+          "studentNumber": "EGE2024026",
+          "photo": "https://synapses.agroparistech.fr/images/photos/fb54de48-4645-4013-849d-157a1c029fb5.jpg",
+          "absenceCount": 0
+        },
+        {
+          "firstName": "Ziyi",
+          "lastName": "WANG",
+          "email": "ziyi.wang@agroparistech.fr",
+          "studentNumber": "EGE2024027",
+          "photo": "https://synapses.agroparistech.fr/images/photos/1ccb51db-ee12-418d-b0c3-4cbc9afee90c.jpg",
+          "absenceCount": 0
+        }
+      ]
+    },
+    {
+      "name": "Modules",
+      "description": "Modules d'enseignement",
+      "fields": [
+        {
+          "name": "name",
+          "type": "singleLineText",
+          "description": "Nom du module"
+        },
+        {
+          "name": "description",
+          "type": "multilineText",
+          "description": "Description du module"
+        },
+        {
+          "name": "color",
+          "type": "singleLineText",
+          "description": "Couleur du module (format hex)"
+        }
+      ],
+      "records": [
+        {
+          "name": "Atelier Conseil",
+          "description": "Module d'atelier conseil pour les étudiants",
+          "color": "#4CAF50"
+        },
+        {
+          "name": "Politique Générale",
+          "description": "Module de politique générale",
+          "color": "#2196F3"
+        },
+        {
+          "name": "Global Challenge",
+          "description": "Module de défi global",
+          "color": "#FF9800"
+        },
+        {
+          "name": "Projet d'Option",
+          "description": "Module de projet d'option",
+          "color": "#9C27B0"
+        }
+      ]
+    },
+    {
+      "name": "Projects",
+      "description": "Projets des étudiants",
+      "fields": [
+        {
+          "name": "name",
+          "type": "singleLineText",
+          "description": "Nom du projet"
+        },
+        {
+          "name": "description",
+          "type": "multilineText",
+          "description": "Description du projet"
+        },
+        {
+          "name": "moduleId",
+          "type": "multipleRecordLinks",
+          "description": "Lien vers le module",
+          "options": {
+            "linkedTableId": "Modules"
+          }
+        },
+        {
+          "name": "deadline",
+          "type": "date",
+          "description": "Date limite du projet"
+        },
+        {
+          "name": "studentIds",
+          "type": "multipleRecordLinks",
+          "description": "Étudiants assignés au projet",
+          "options": {
+            "linkedTableId": "Students"
+          }
+        },
+        {
+          "name": "status",
+          "type": "singleSelect",
+          "description": "Statut du projet",
+          "options": {
+            "choices": [
+              {"name": "Non remis", "color": "red"},
+              {"name": "Remis", "color": "blue"},
+              {"name": "À corriger", "color": "orange"},
+              {"name": "Validé", "color": "green"}
+            ]
+          }
+        },
+        {
+          "name": "trackingType",
+          "type": "singleSelect",
+          "description": "Type de suivi",
+          "options": {
+            "choices": [
+              {"name": "simple", "color": "blue"},
+              {"name": "step_by_step", "color": "purple"}
+            ]
+          }
+        },
+        {
+          "name": "stepStatus",
+          "type": "singleSelect",
+          "description": "Statut de l'étape",
+          "options": {
+            "choices": [
+              {"name": "Point d'étape 1", "color": "blue"},
+              {"name": "Point d'étape 2", "color": "blue"},
+              {"name": "Validation des dates des restitutions", "color": "orange"},
+              {"name": "Remise des travaux", "color": "green"}
+            ]
+          }
+        },
+        {
+          "name": "submissionDate",
+          "type": "date",
+          "description": "Date de soumission"
+        },
+        {
+          "name": "grade",
+          "type": "number",
+          "description": "Note du projet"
+        },
+        {
+          "name": "comments",
+          "type": "multilineText",
+          "description": "Commentaires sur le projet"
+        }
+      ],
+      "records": [
+        {
+          "name": "Audit Stratégique Entreprise A",
+          "description": "Réalisation d'un audit complet de l'entreprise A",
+          "deadline": "2024-03-15",
+          "status": "Remis",
+          "trackingType": "simple",
+          "submissionDate": "2024-03-14",
+          "grade": 16,
+          "comments": "Excellent travail, analyse très pertinente"
+        },
+        {
+          "name": "Challenge Innovation Durable",
+          "description": "Défi d'innovation pour le développement durable",
+          "deadline": "2024-04-20",
+          "status": "Validé",
+          "trackingType": "simple",
+          "submissionDate": "2024-04-18",
+          "grade": 18,
+          "comments": "Projet innovant et bien structuré"
+        },
+        {
+          "name": "Conseil en Transformation Digitale",
+          "description": "Conseil en transformation digitale pour une PME",
+          "deadline": "2024-05-10",
+          "status": "À corriger",
+          "trackingType": "simple",
+          "submissionDate": "2024-05-08",
+          "grade": 12,
+          "comments": "À améliorer sur la partie technique"
+        },
+        {
+          "name": "Projet avec Suivi par Étapes",
+          "description": "Exemple de projet utilisant le suivi par étapes",
+          "deadline": "2024-08-30",
+          "status": "Non remis",
+          "trackingType": "step_by_step",
+          "stepStatus": "Point d'étape 1"
+        }
+      ]
+    }
+  ]
+}

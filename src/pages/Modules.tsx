@@ -24,10 +24,10 @@ import {
   Assignment as ProjectIcon,
 } from '@mui/icons-material';
 import { Module, ProjectStatus } from '../types';
-import { useFirebaseContext } from '../context/FirebaseContext';
+import { useAirtableContext } from '../context/AirtableContext';
 
 const Modules: React.FC = () => {
-  const { modules, projects, updateModule, addModule } = useFirebaseContext();
+  const { modules, projects, updateModule, addModule } = useAirtableContext();
   const navigate = useNavigate();
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
