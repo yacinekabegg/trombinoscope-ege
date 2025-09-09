@@ -103,7 +103,7 @@ const Projects: React.FC = () => {
   };
 
   const handleSaveProject = () => {
-    if (editingProject) {
+    if (editingProject && editingProject.name && editingProject.name.trim() !== '') {
       const updatedProject = {
         ...editingProject,
         studentIds: selectedStudents.map(s => s.id),
@@ -120,11 +120,15 @@ const Projects: React.FC = () => {
       } else {
         addProject(updatedProject);
       }
+      
+      setEditDialogOpen(false);
+      setEditingProject(null);
+      setSelectedStudents([]);
+      setTrackingType(ProjectTrackingType.SIMPLE);
+    } else {
+      // Afficher une alerte si le nom est vide
+      alert('Veuillez saisir un nom pour le projet');
     }
-    setEditDialogOpen(false);
-    setEditingProject(null);
-    setSelectedStudents([]);
-    setTrackingType(ProjectTrackingType.SIMPLE);
   };
 
   const handleAddProject = () => {
