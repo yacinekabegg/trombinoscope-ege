@@ -138,14 +138,14 @@ const Trombinoscope: React.FC = () => {
   };
 
   const handleAddStudent = () => {
-    if (newStudent.firstName && newStudent.lastName && newStudent.email && newStudent.studentNumber) {
+    if (newStudent.firstName && newStudent.lastName && newStudent.email) {
       const student: Student = {
         id: Date.now().toString(),
         firstName: newStudent.firstName,
         lastName: newStudent.lastName,
         email: newStudent.email,
-        studentNumber: newStudent.studentNumber,
-        photo: `https://via.placeholder.com/150/4CAF50/white?text=${newStudent.firstName[0]}${newStudent.lastName[0]}`,
+        studentNumber: '', // Plus de numéro étudiant requis
+        photo: newStudent.photo || `https://via.placeholder.com/150/4CAF50/white?text=${newStudent.firstName[0]}${newStudent.lastName[0]}`,
         absenceCount: newStudent.absenceCount || 0,
       };
       addStudent(student);
