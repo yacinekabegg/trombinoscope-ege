@@ -41,7 +41,7 @@
 
 ### 3. Obtenir les clés API
 
-1. Allez sur [Airtable.com/account](https://airtable.com/account)
+1. Allez sur [Airtable.com/account](@)
 2. Copiez votre **API Key**
 3. Allez sur votre base "Trombinoscope EGE"
 4. Cliquez sur "Help" → "API documentation"
