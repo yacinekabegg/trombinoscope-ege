@@ -42,7 +42,7 @@ import {
 import { Student } from '../types';
 import { useAirtableContext } from '../context/AirtableContext';
 import { exportToExcel, exportToPDF, exportTrombinoscopeToPDF } from '../utils/exportUtils';
-import { getStudentInitials } from '../utils/photoUtils';
+import { getStudentInitials, resizeImageFile } from '../utils/photoUtils';
 
 type ViewMode = 'gallery' | 'table';
 
@@ -80,19 +80,21 @@ const Trombinoscope: React.FC = () => {
     );
   };
 
-  const handlePhotoUpload = (event: React.ChangeEvent<HTMLInputElement>, isEditing: boolean = true) => {
+  const handlePhotoUpload = async (event: React.ChangeEvent<HTMLInputElement>, isEditing: boolean = true) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const photoUrl = e.target?.result as string;
-        if (isEditing && editingStudent) {
+      try {
+        // Compresser la photo pour qu'elle tienne dans Airtable (sinon "Load failed")
+        const photoUrl = await resizeImageFile(file);
+        if (isEditing) {
           setEditingStudent(prev => prev ? { ...prev, photo: photoUrl } : null);
         } else {
           setNewStudent(prev => ({ ...prev, photo: photoUrl }));
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        console.error('Erreur lors du traitement de la photo:', err);
+        alert("Impossible de traiter cette image. Essaie une autre photo.");
+      }
     }
   };
 
