@@ -9,11 +9,13 @@ interface AirtableContextType {
   modules: Module[];
   updateStudent: (student: Student) => void;
   addStudent: (student: Student) => void;
+  deleteStudent: (studentId: string) => void;
   updateProject: (project: Project) => void;
   addProject: (project: Project) => void;
   deleteProject: (projectId: string) => void;
   updateModule: (module: Module) => void;
   addModule: (module: Module) => void;
+  deleteModule: (moduleId: string) => void;
   resetData: () => void;
   migrateStudents: () => void;
   loading: boolean;
@@ -126,6 +128,17 @@ export const AirtableProvider: React.FC<AirtableProviderProps> = ({ children }) 
     }
   };
 
+  const deleteStudent = async (studentId: string) => {
+    try {
+      await studentService.delete(studentId);
+      // Mettre à jour l'état local
+      setStudents(prev => prev.filter(s => s.id !== studentId));
+    } catch (err) {
+      console.error('Erreur lors de la suppression de l\'étudiant:', err);
+      setError('Erreur lors de la suppression');
+    }
+  };
+
   const updateProject = async (project: Project) => {
     try {
       await projectService.save(project);
@@ -178,6 +191,17 @@ export const AirtableProvider: React.FC<AirtableProviderProps> = ({ children }) 
     } catch (err) {
       console.error('Erreur lors de l\'ajout du module:', err);
       setError('Erreur lors de la sauvegarde');
+    }
+  };
+
+  const deleteModule = async (moduleId: string) => {
+    try {
+      await moduleService.delete(moduleId);
+      // Mettre à jour l'état local
+      setModules(prev => prev.filter(m => m.id !== moduleId));
+    } catch (err) {
+      console.error('Erreur lors de la suppression du module:', err);
+      setError('Erreur lors de la suppression');
     }
   };
 
@@ -248,11 +272,13 @@ export const AirtableProvider: React.FC<AirtableProviderProps> = ({ children }) 
     modules,
     updateStudent,
     addStudent,
+    deleteStudent,
     updateProject,
     addProject,
     deleteProject,
     updateModule,
     addModule,
+    deleteModule,
     resetData,
     migrateStudents,
     loading,

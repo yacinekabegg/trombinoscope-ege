@@ -25,7 +25,9 @@ import {
   TableRow,
   Paper,
   Checkbox,
+  useMediaQuery,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import {
   ViewModule as GridViewIcon,
   ViewList as ListViewIcon,
@@ -45,7 +47,9 @@ import { getStudentInitials } from '../utils/photoUtils';
 type ViewMode = 'gallery' | 'table';
 
 const Trombinoscope: React.FC = () => {
-  const { students, projects, modules, updateStudent, addStudent, resetData, migrateStudents } = useAirtableContext();
+  const { students, projects, modules, updateStudent, addStudent, deleteStudent, resetData, migrateStudents } = useAirtableContext();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [viewMode, setViewMode] = useState<ViewMode>('gallery');
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -156,6 +160,24 @@ const Trombinoscope: React.FC = () => {
         studentNumber: '',
       });
       setAddDialogOpen(false);
+    }
+  };
+
+  const handleDeleteStudent = (student: Student) => {
+    if (window.confirm(`Supprimer définitivement ${student.firstName} ${student.lastName} ?`)) {
+      deleteStudent(student.id);
+      setSelectedStudents(prev => prev.filter(id => id !== student.id));
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    if (
+      window.confirm(
+        `Supprimer définitivement ${selectedStudents.length} étudiant(s) sélectionné(s) ?`
+      )
+    ) {
+      selectedStudents.forEach(id => deleteStudent(id));
+      setSelectedStudents([]);
     }
   };
 
@@ -343,22 +365,38 @@ const Trombinoscope: React.FC = () => {
                       </Box>
                     </Box>
                   </Box>
-                  <IconButton
-                    size="small"
-                    sx={{ 
-                      flexShrink: 0,
-                      backgroundColor: 'rgba(0,0,0,0.04)',
-                      '&:hover': {
-                        backgroundColor: 'rgba(0,0,0,0.08)',
-                      }
-                    }}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEditStudent(student);
-                    }}
-                  >
-                    <EditIcon fontSize="small" />
-                  </IconButton>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, flexShrink: 0 }}>
+                    <IconButton
+                      size="small"
+                      sx={{
+                        backgroundColor: 'rgba(0,0,0,0.04)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(0,0,0,0.08)',
+                        }
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditStudent(student);
+                      }}
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      sx={{
+                        backgroundColor: 'rgba(244, 67, 54, 0.08)',
+                        '&:hover': {
+                          backgroundColor: 'rgba(244, 67, 54, 0.18)',
+                        }
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteStudent(student);
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" color="error" />
+                    </IconButton>
+                  </Box>
                 </Box>
 
                 {/* Section des projets - Hauteur fixe */}
@@ -446,8 +484,8 @@ const Trombinoscope: React.FC = () => {
   );
 
   const renderTableView = () => (
-    <TableContainer component={Paper}>
-      <Table>
+    <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+      <Table sx={{ minWidth: 750 }}>
         <TableHead>
           <TableRow>
             <TableCell padding="checkbox">
@@ -574,15 +612,27 @@ const Trombinoscope: React.FC = () => {
                   </Box>
                 </TableCell>
                 <TableCell>
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleEditStudent(student);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
+                  <Box sx={{ display: 'flex', gap: 0.5 }}>
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditStudent(student);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      color="error"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteStudent(student);
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
                 </TableCell>
               </TableRow>
             );
@@ -594,17 +644,28 @@ const Trombinoscope: React.FC = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, flexDirection: { xs: 'column', md: 'row' }, gap: 2, mb: 3 }}>
         <Typography variant="h4" component="h1">
           Trombinoscope
         </Typography>
-        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', flexWrap: 'wrap' }}>
           {selectedStudents.length > 0 && (
-            <Chip
-              label={`${selectedStudents.length} étudiant(s) sélectionné(s)`}
-              color="primary"
-              onDelete={() => setSelectedStudents([])}
-            />
+            <>
+              <Chip
+                label={`${selectedStudents.length} étudiant(s) sélectionné(s)`}
+                color="primary"
+                onDelete={() => setSelectedStudents([])}
+              />
+              <Button
+                variant="outlined"
+                color="error"
+                size="small"
+                startIcon={<DeleteIcon />}
+                onClick={handleDeleteSelected}
+              >
+                Supprimer la sélection
+              </Button>
+            </>
           )}
           <ToggleButtonGroup
             value={viewMode}
@@ -674,7 +735,7 @@ const Trombinoscope: React.FC = () => {
       {viewMode === 'gallery' ? renderGalleryView() : renderTableView()}
 
       {/* Dialog d'édition */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth fullScreen={isMobile}>
         <DialogTitle>Modifier l'étudiant</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
@@ -787,7 +848,7 @@ const Trombinoscope: React.FC = () => {
       </Dialog>
 
       {/* Dialog d'ajout */}
-      <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={addDialogOpen} onClose={() => setAddDialogOpen(false)} maxWidth="sm" fullWidth fullScreen={isMobile}>
         <DialogTitle>Ajouter un nouvel étudiant</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>

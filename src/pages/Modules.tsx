@@ -16,10 +16,13 @@ import {
   DialogActions,
   TextField,
   IconButton,
+  useMediaQuery,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import {
   Add as AddIcon,
   Edit as EditIcon,
+  Delete as DeleteIcon,
   Visibility as ViewIcon,
   Assignment as ProjectIcon,
 } from '@mui/icons-material';
@@ -27,8 +30,10 @@ import { Module, ProjectStatus } from '../types';
 import { useAirtableContext } from '../context/AirtableContext';
 
 const Modules: React.FC = () => {
-  const { modules, projects, updateModule, addModule } = useAirtableContext();
+  const { modules, projects, updateModule, addModule, deleteModule } = useAirtableContext();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingModule, setEditingModule] = useState<Module | null>(null);
 
@@ -57,6 +62,18 @@ const Modules: React.FC = () => {
   const handleEditModule = (module: Module) => {
     setEditingModule(module);
     setEditDialogOpen(true);
+  };
+
+  const handleDeleteModule = (module: Module) => {
+    const linkedProjects = getModuleProjects(module.id);
+    const message =
+      linkedProjects.length > 0
+        ? `Le module « ${module.name} » est rattaché à ${linkedProjects.length} projet(s). ` +
+          `Si vous le supprimez, ces projets n'auront plus de module associé.\n\nSupprimer quand même ?`
+        : `Supprimer définitivement le module « ${module.name} » ?`;
+    if (window.confirm(message)) {
+      deleteModule(module.id);
+    }
   };
 
   const handleSaveModule = () => {
@@ -114,12 +131,21 @@ const Modules: React.FC = () => {
                     <Typography variant="h6" component="h2" sx={{ color: module.color }}>
                       {module.name}
                     </Typography>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleEditModule(module)}
-                    >
-                      <EditIcon />
-                    </IconButton>
+                    <Box sx={{ display: 'flex', gap: 0.5 }}>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleEditModule(module)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        color="error"
+                        onClick={() => handleDeleteModule(module)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
 
                   {module.description && (
@@ -192,7 +218,7 @@ const Modules: React.FC = () => {
       </Grid>
 
       {/* Dialog d'édition de module */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth fullScreen={isMobile}>
         <DialogTitle>
           {editingModule?.id ? 'Modifier le module' : 'Ajouter un nouveau module'}
         </DialogTitle>
@@ -214,11 +240,12 @@ const Modules: React.FC = () => {
               rows={3}
             />
             <TextField
-              label="Couleur (hex)"
+              label="Couleur"
+              type="color"
               value={editingModule?.color || '#1976d2'}
               onChange={(e) => setEditingModule(prev => prev ? { ...prev, color: e.target.value } : null)}
               fullWidth
-              placeholder="#1976d2"
+              sx={{ '& input': { height: 48, cursor: 'pointer' } }}
             />
           </Box>
         </DialogContent>

@@ -25,7 +25,9 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  useMediaQuery,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import {
   People as PeopleIcon,
   Assignment as ProjectIcon,
@@ -65,6 +67,8 @@ function TabPanel(props: TabPanelProps) {
 
 const Dashboard: React.FC = () => {
   const { projects, students, modules } = useAirtableContext();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [tabValue, setTabValue] = useState(0);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [studentDetailOpen, setStudentDetailOpen] = useState(false);
@@ -286,8 +290,8 @@ const Dashboard: React.FC = () => {
         Vue par Étudiant
       </Typography>
       
-      <TableContainer component={Paper}>
-        <Table>
+      <TableContainer component={Paper} sx={{ overflowX: 'auto' }}>
+        <Table sx={{ minWidth: 650 }}>
           <TableHead>
             <TableRow>
               <TableCell>Étudiant</TableCell>
@@ -490,7 +494,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 3 }}>
         <Typography variant="h4" component="h1">
           Tableau de Bord
         </Typography>
@@ -514,7 +518,7 @@ const Dashboard: React.FC = () => {
       </Box>
       
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="dashboard tabs">
+        <Tabs value={tabValue} onChange={handleTabChange} aria-label="dashboard tabs" variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
           <Tab label="Vue d'ensemble" />
           <Tab label="Par Étudiant" />
           <Tab label="Par Groupe" />
@@ -536,7 +540,7 @@ const Dashboard: React.FC = () => {
       </TabPanel>
 
       {/* Dialog de détail étudiant */}
-      <Dialog open={studentDetailOpen} onClose={() => setStudentDetailOpen(false)} maxWidth="md" fullWidth>
+      <Dialog open={studentDetailOpen} onClose={() => setStudentDetailOpen(false)} maxWidth="md" fullWidth fullScreen={isMobile}>
         <DialogTitle>
           Détail de {selectedStudent?.firstName} {selectedStudent?.lastName}
         </DialogTitle>
@@ -567,8 +571,8 @@ const Dashboard: React.FC = () => {
                 Projets ({getStudentProjects(selectedStudent.id).length})
               </Typography>
               
-              <TableContainer>
-                <Table>
+              <TableContainer sx={{ overflowX: 'auto' }}>
+                <Table sx={{ minWidth: 500 }}>
                   <TableHead>
                     <TableRow>
                       <TableCell>Projet</TableCell>

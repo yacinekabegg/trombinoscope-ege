@@ -23,7 +23,9 @@ import {
   Autocomplete,
   IconButton,
   Tooltip,
+  useMediaQuery,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import {
   Add as AddIcon,
   Edit as EditIcon,
@@ -43,6 +45,8 @@ import { getStudentInitials } from '../utils/photoUtils';
 const Projects: React.FC = () => {
   const { projects, students, modules, updateProject, addProject, deleteProject } = useAirtableContext();
   const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [selectedStudents, setSelectedStudents] = useState<Student[]>([]);
@@ -104,11 +108,22 @@ const Projects: React.FC = () => {
 
   const handleSaveProject = () => {
     if (editingProject && editingProject.name && editingProject.name.trim() !== '') {
+      // La note, la date de rendu et les commentaires n'ont de sens que
+      // si le projet est "Remis" ou "Validé". Sinon on les réinitialise
+      // pour ne pas conserver des valeurs obsolètes après un changement de statut.
+      const keepsSubmissionDetails =
+        trackingType === ProjectTrackingType.SIMPLE &&
+        (editingProject.status === ProjectStatus.SUBMITTED ||
+          editingProject.status === ProjectStatus.VALIDATED);
+
       const updatedProject = {
         ...editingProject,
         studentIds: selectedStudents.map(s => s.id),
         trackingType: trackingType,
         stepStatus: trackingType === ProjectTrackingType.STEP_BY_STEP ? editingProject.stepStatus : undefined,
+        grade: keepsSubmissionDetails ? editingProject.grade : undefined,
+        submissionDate: keepsSubmissionDetails ? editingProject.submissionDate : undefined,
+        comments: keepsSubmissionDetails ? editingProject.comments : undefined,
         updatedAt: new Date(),
       };
       
@@ -169,15 +184,15 @@ const Projects: React.FC = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 3 }}>
-        <Box sx={{ flex: 1 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 3 }}>
+        <Box sx={{ flex: 1, width: '100%' }}>
           <Typography variant="h4" component="h1" sx={{ mb: 2 }}>
             Gestion des Projets
           </Typography>
           
           {/* Filtre par module */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-            <FormControl size="small" sx={{ minWidth: 200 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, flexWrap: 'wrap' }}>
+            <FormControl size="small" sx={{ minWidth: { xs: '100%', sm: 200 } }}>
               <InputLabel>Filtrer par module</InputLabel>
               <Select
                 value={filteredModule || ''}
@@ -218,7 +233,7 @@ const Projects: React.FC = () => {
           variant="contained"
           startIcon={<AddIcon />}
           onClick={handleAddProject}
-          sx={{ ml: 2 }}
+          sx={{ flexShrink: 0, width: { xs: '100%', sm: 'auto' } }}
         >
           Nouveau Projet
         </Button>
@@ -377,7 +392,7 @@ const Projects: React.FC = () => {
                     startIcon={<PeopleIcon />}
                     onClick={() => handleEditProject(project)}
                   >
-                    Gérer Groupe
+                    Modifier le projet
                   </Button>
                 </CardActions>
               </Card>
@@ -387,7 +402,7 @@ const Projects: React.FC = () => {
       </Grid>
 
       {/* Dialog d'édition de projet */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="md" fullWidth>
+      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="md" fullWidth fullScreen={isMobile}>
         <DialogTitle>
           {editingProject?.id && projects.find(p => p.id === editingProject.id) ? 'Modifier le projet' : 'Nouveau projet'}
         </DialogTitle>
