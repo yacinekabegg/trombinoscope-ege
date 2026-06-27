@@ -119,12 +119,12 @@ export const AirtableProvider: React.FC<AirtableProviderProps> = ({ children }) 
 
   const addStudent = async (student: Student) => {
     try {
-      await studentService.save(student);
-      // Mettre à jour l'état local
-      setStudents(prev => [...prev, student]);
-    } catch (err) {
+      // Récupérer l'identifiant Airtable réel (rec...) pour rester synchronisé
+      const newId = await studentService.save(student);
+      setStudents(prev => [...prev, { ...student, id: newId }]);
+    } catch (err: any) {
       console.error('Erreur lors de l\'ajout de l\'étudiant:', err);
-      setError('Erreur lors de la sauvegarde');
+      setError(`Erreur lors de l'ajout de l'étudiant : ${err?.message || err}`);
     }
   };
 
@@ -152,12 +152,11 @@ export const AirtableProvider: React.FC<AirtableProviderProps> = ({ children }) 
 
   const addProject = async (project: Project) => {
     try {
-      await projectService.save(project);
-      // Mettre à jour l'état local
-      setProjects(prev => [...prev, project]);
-    } catch (err) {
+      const newId = await projectService.save(project);
+      setProjects(prev => [...prev, { ...project, id: newId }]);
+    } catch (err: any) {
       console.error('Erreur lors de l\'ajout du projet:', err);
-      setError('Erreur lors de la sauvegarde');
+      setError(`Erreur lors de l'ajout du projet : ${err?.message || err}`);
     }
   };
 
@@ -185,12 +184,11 @@ export const AirtableProvider: React.FC<AirtableProviderProps> = ({ children }) 
 
   const addModule = async (module: Module) => {
     try {
-      await moduleService.save(module);
-      // Mettre à jour l'état local
-      setModules(prev => [...prev, module]);
-    } catch (err) {
+      const newId = await moduleService.save(module);
+      setModules(prev => [...prev, { ...module, id: newId }]);
+    } catch (err: any) {
       console.error('Erreur lors de l\'ajout du module:', err);
-      setError('Erreur lors de la sauvegarde');
+      setError(`Erreur lors de l'ajout du module : ${err?.message || err}`);
     }
   };
 

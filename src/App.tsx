@@ -79,7 +79,7 @@ const Layout: React.FC = () => {
 
       <Snackbar
         open={errorOpen}
-        autoHideDuration={6000}
+        autoHideDuration={12000}
         onClose={() => setErrorOpen(false)}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >

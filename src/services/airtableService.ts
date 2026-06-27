@@ -38,8 +38,8 @@ export const studentService = {
     });
   },
 
-  // Sauvegarder un étudiant
-  async save(student: Student): Promise<void> {
+  // Sauvegarder un étudiant. Renvoie l'identifiant Airtable (rec...) du record.
+  async save(student: Student): Promise<string> {
     return new Promise((resolve, reject) => {
       const fields = {
         firstName: student.firstName,
@@ -57,17 +57,17 @@ export const studentService = {
             console.error('Erreur lors de la mise à jour de l\'étudiant:', err);
             reject(err);
           } else {
-            resolve();
+            resolve(student.id);
           }
         });
       } else {
         // Création d'un nouvel étudiant
         base(TABLES.STUDENTS).create(fields, (err, record) => {
-          if (err) {
+          if (err || !record) {
             console.error('Erreur lors de la création de l\'étudiant:', err);
-            reject(err);
+            reject(err || new Error('Aucun enregistrement renvoyé par Airtable'));
           } else {
-            resolve();
+            resolve(record.getId());
           }
         });
       }
@@ -133,8 +133,8 @@ export const projectService = {
     });
   },
 
-  // Sauvegarder un projet
-  async save(project: Project): Promise<void> {
+  // Sauvegarder un projet. Renvoie l'identifiant Airtable (rec...) du record.
+  async save(project: Project): Promise<string> {
     return new Promise((resolve, reject) => {
       const fields = {
         moduleId: project.moduleId ? [project.moduleId] : [],
@@ -157,17 +157,17 @@ export const projectService = {
             console.error('Erreur lors de la mise à jour du projet:', err);
             reject(err);
           } else {
-            resolve();
+            resolve(project.id);
           }
         });
       } else {
         // Création d'un nouveau projet
         base(TABLES.PROJECTS).create(fields, (err, record) => {
-          if (err) {
+          if (err || !record) {
             console.error('Erreur lors de la création du projet:', err);
-            reject(err);
+            reject(err || new Error('Aucun enregistrement renvoyé par Airtable'));
           } else {
-            resolve();
+            resolve(record.getId());
           }
         });
       }
@@ -223,8 +223,8 @@ export const moduleService = {
     });
   },
 
-  // Sauvegarder un module
-  async save(module: Module): Promise<void> {
+  // Sauvegarder un module. Renvoie l'identifiant Airtable (rec...) du record.
+  async save(module: Module): Promise<string> {
     return new Promise((resolve, reject) => {
       const fields = {
         name: module.name,
@@ -239,17 +239,17 @@ export const moduleService = {
             console.error('Erreur lors de la mise à jour du module:', err);
             reject(err);
           } else {
-            resolve();
+            resolve(module.id);
           }
         });
       } else {
         // Création d'un nouveau module
         base(TABLES.MODULES).create(fields, (err, record) => {
-          if (err) {
+          if (err || !record) {
             console.error('Erreur lors de la création du module:', err);
-            reject(err);
+            reject(err || new Error('Aucun enregistrement renvoyé par Airtable'));
           } else {
-            resolve();
+            resolve(record.getId());
           }
         });
       }

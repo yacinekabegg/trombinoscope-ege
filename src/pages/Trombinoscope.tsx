@@ -149,7 +149,8 @@ const Trombinoscope: React.FC = () => {
         lastName: newStudent.lastName,
         email: newStudent.email,
         studentNumber: '', // Plus de numéro étudiant requis
-        photo: newStudent.photo || `https://via.placeholder.com/150/4CAF50/white?text=${newStudent.firstName[0]}${newStudent.lastName[0]}`,
+        // Pas de photo par défaut : l'avatar à initiales s'affiche automatiquement
+        photo: newStudent.photo || '',
         absenceCount: newStudent.absenceCount || 0,
       };
       addStudent(student);
