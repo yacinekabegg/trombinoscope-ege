@@ -23,8 +23,13 @@ export const getStudentInitials = (firstName: string, lastName: string): string 
  * @param quality - Qualité JPEG entre 0 et 1
  * @returns Une data URL JPEG compressée
  */
+// Limite de taille (en caractères de la data URL). Les champs Airtable ont une
+// limite d'environ 100 000 caractères par cellule ; on garde une marge.
+const MAX_DATA_URL_LENGTH = 90000;
+
 // Dessine une source image (HTMLImageElement ou ImageBitmap) sur un canvas
-// redimensionné, et renvoie une data URL JPEG compressée.
+// redimensionné, et renvoie une data URL JPEG compressée — en réduisant
+// automatiquement qualité puis dimensions jusqu'à passer sous la limite Airtable.
 const drawToJpeg = (
   source: CanvasImageSource,
   srcWidth: number,
@@ -32,25 +37,45 @@ const drawToJpeg = (
   maxSize: number,
   quality: number
 ): string => {
-  let width = srcWidth;
-  let height = srcHeight;
-  if (width > height && width > maxSize) {
-    height = Math.round((height * maxSize) / width);
-    width = maxSize;
-  } else if (height > maxSize) {
-    width = Math.round((width * maxSize) / height);
-    height = maxSize;
+  const render = (size: number, q: number): string => {
+    let width = srcWidth;
+    let height = srcHeight;
+    if (width > height && width > size) {
+      height = Math.round((height * size) / width);
+      width = size;
+    } else if (height > size) {
+      width = Math.round((width * size) / height);
+      height = size;
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Contexte canvas indisponible');
+    }
+    ctx.drawImage(source, 0, 0, width, height);
+    return canvas.toDataURL('image/jpeg', q);
+  };
+
+  let size = maxSize;
+  let q = quality;
+  let dataUrl = render(size, q);
+
+  // Tant que c'est trop gros : d'abord baisser la qualité, puis la taille.
+  while (dataUrl.length > MAX_DATA_URL_LENGTH && (q > 0.35 || size > 150)) {
+    if (q > 0.35) {
+      q -= 0.1;
+    } else {
+      size = Math.round(size * 0.8);
+    }
+    dataUrl = render(size, q);
   }
 
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  if (!ctx) {
-    throw new Error('Contexte canvas indisponible');
+  if (dataUrl.length > MAX_DATA_URL_LENGTH) {
+    throw new Error('Image trop volumineuse même après compression');
   }
-  ctx.drawImage(source, 0, 0, width, height);
-  return canvas.toDataURL('image/jpeg', quality);
+  return dataUrl;
 };
 
 // Repli historique : FileReader + <img>. Fonctionne pour les formats que le

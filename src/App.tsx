@@ -4,6 +4,7 @@ import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/s
 import CssBaseline from '@mui/material/CssBaseline';
 import { Box, Toolbar, CircularProgress, Snackbar, Alert } from '@mui/material';
 import { AirtableProvider, useAirtableContext } from './context/AirtableContext';
+import AuthGate from './components/AuthGate';
 import Navigation, { drawerWidth } from './components/Navigation';
 import Trombinoscope from './pages/Trombinoscope';
 import Dashboard from './pages/Dashboard';
@@ -95,11 +96,13 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AirtableProvider>
-        <Router>
-          <Layout />
-        </Router>
-      </AirtableProvider>
+      <AuthGate>
+        <AirtableProvider>
+          <Router>
+            <Layout />
+          </Router>
+        </AirtableProvider>
+      </AuthGate>
     </ThemeProvider>
   );
 }

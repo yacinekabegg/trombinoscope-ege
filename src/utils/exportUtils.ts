@@ -14,10 +14,10 @@ export const exportToExcel = (
 
   // Feuille 1: Étudiants
   const studentsData = students.map(student => ({
-    'Numéro Étudiant': student.studentNumber,
     'Prénom': student.firstName,
     'Nom': student.lastName,
     'Email': student.email,
+    'Absences': student.absenceCount,
   }));
 
   const studentsSheet = XLSX.utils.json_to_sheet(studentsData);
@@ -60,7 +60,6 @@ export const exportToExcel = (
       .reduce((sum, p) => sum + (p.grade || 0), 0) / studentProjects.filter(p => p.grade !== undefined).length || 0;
 
     return {
-      'Numéro Étudiant': student.studentNumber,
       'Prénom': student.firstName,
       'Nom': student.lastName,
       'Email': student.email,
@@ -133,19 +132,17 @@ export const exportToPDF = async (
 
   pdf.setFontSize(10);
   pdf.setFont('helvetica', 'bold');
-  pdf.text('Numéro', 20, yPosition);
-  pdf.text('Nom', 50, yPosition);
-  pdf.text('Prénom', 100, yPosition);
-  pdf.text('Email', 150, yPosition);
+  pdf.text('Nom', 20, yPosition);
+  pdf.text('Prénom', 70, yPosition);
+  pdf.text('Email', 120, yPosition);
   yPosition += 6;
 
   pdf.setFont('helvetica', 'normal');
-  students.forEach((student, index) => {
+  students.forEach((student) => {
     checkPageBreak(10);
-    pdf.text(student.studentNumber, 20, yPosition);
-    pdf.text(student.lastName, 50, yPosition);
-    pdf.text(student.firstName, 100, yPosition);
-    pdf.text(student.email, 150, yPosition);
+    pdf.text(student.lastName, 20, yPosition);
+    pdf.text(student.firstName, 70, yPosition);
+    pdf.text(student.email, 120, yPosition);
     yPosition += 6;
   });
 

@@ -116,12 +116,18 @@ const Projects: React.FC = () => {
         (editingProject.status === ProjectStatus.SUBMITTED ||
           editingProject.status === ProjectStatus.VALIDATED);
 
+      // Borne la note dans l'intervalle 0–20 si elle est renseignée
+      const boundedGrade =
+        editingProject.grade === undefined || editingProject.grade === null || isNaN(editingProject.grade)
+          ? undefined
+          : Math.min(20, Math.max(0, editingProject.grade));
+
       const updatedProject = {
         ...editingProject,
         studentIds: selectedStudents.map(s => s.id),
         trackingType: trackingType,
         stepStatus: trackingType === ProjectTrackingType.STEP_BY_STEP ? editingProject.stepStatus : undefined,
-        grade: keepsSubmissionDetails ? editingProject.grade : undefined,
+        grade: keepsSubmissionDetails ? boundedGrade : undefined,
         submissionDate: keepsSubmissionDetails ? editingProject.submissionDate : undefined,
         comments: keepsSubmissionDetails ? editingProject.comments : undefined,
         updatedAt: new Date(),

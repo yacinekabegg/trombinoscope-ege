@@ -47,7 +47,7 @@ import { getStudentInitials, resizeImageFile } from '../utils/photoUtils';
 type ViewMode = 'gallery' | 'table';
 
 const Trombinoscope: React.FC = () => {
-  const { students, projects, modules, updateStudent, addStudent, deleteStudent, resetData, migrateStudents } = useAirtableContext();
+  const { students, projects, modules, updateStudent, addStudent, deleteStudent, resetData } = useAirtableContext();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const [viewMode, setViewMode] = useState<ViewMode>('gallery');
@@ -135,8 +135,18 @@ const Trombinoscope: React.FC = () => {
     setEditDialogOpen(true);
   };
 
+  const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
   const handleSaveStudent = () => {
     if (editingStudent) {
+      if (!editingStudent.firstName?.trim() || !editingStudent.lastName?.trim() || !editingStudent.email?.trim()) {
+        alert('Merci de renseigner le prénom, le nom et l\'email.');
+        return;
+      }
+      if (!isValidEmail(editingStudent.email)) {
+        alert('L\'adresse email ne semble pas valide (ex. prenom.nom@agroparistech.fr).');
+        return;
+      }
       updateStudent(editingStudent);
     }
     setEditDialogOpen(false);
@@ -144,7 +154,15 @@ const Trombinoscope: React.FC = () => {
   };
 
   const handleAddStudent = () => {
-    if (newStudent.firstName && newStudent.lastName && newStudent.email) {
+    if (!newStudent.firstName?.trim() || !newStudent.lastName?.trim() || !newStudent.email?.trim()) {
+      alert('Merci de renseigner le prénom, le nom et l\'email.');
+      return;
+    }
+    if (!isValidEmail(newStudent.email)) {
+      alert('L\'adresse email ne semble pas valide (ex. prenom.nom@agroparistech.fr).');
+      return;
+    }
+    {
       const student: Student = {
         id: Date.now().toString(),
         firstName: newStudent.firstName,
@@ -170,6 +188,19 @@ const Trombinoscope: React.FC = () => {
     if (window.confirm(`Supprimer définitivement ${student.firstName} ${student.lastName} ?`)) {
       deleteStudent(student.id);
       setSelectedStudents(prev => prev.filter(id => id !== student.id));
+    }
+  };
+
+  const handleReset = () => {
+    const answer = window.prompt(
+      '⚠️ ATTENTION : cette action efface TOUTES les données (étudiants, modules, projets) ' +
+      'et restaure les données de démonstration. Cette action est irréversible.\n\n' +
+      'Pour confirmer, tapez exactement : SUPPRIMER'
+    );
+    if (answer === 'SUPPRIMER') {
+      resetData();
+    } else if (answer !== null) {
+      alert('Réinitialisation annulée (texte de confirmation incorrect).');
     }
   };
 
@@ -717,20 +748,13 @@ const Trombinoscope: React.FC = () => {
           Ajouter Étudiant
         </Button>
         <Button
-          variant="outlined"
-          color="info"
-          onClick={migrateStudents}
-          sx={{ ml: 2 }}
+          variant="text"
+          color="error"
+          size="small"
+          onClick={handleReset}
+          sx={{ ml: 1, opacity: 0.6, '&:hover': { opacity: 1 } }}
         >
-          Corriger Absences
-        </Button>
-        <Button
-          variant="outlined"
-          color="warning"
-          onClick={resetData}
-          sx={{ ml: 2 }}
-        >
-          Reset Données
+          Réinitialiser
         </Button>
         </Box>
       </Box>
